@@ -1,5 +1,5 @@
 create
-or replace TABLE CITI_BIKE.CITI_BIKE.CITI_BIKE_CURRENT (
+or replace TABLE CITI_BIKE_RAW_FMT_2 (
     "ride_id" VARCHAR(50),
     "rideable_type" VARCHAR(50),
     "started_at" TIMESTAMP_NTZ(9),

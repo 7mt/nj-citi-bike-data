@@ -37,72 +37,70 @@ def download():
 
 def concat():
     # Define data formats
-    schemas = [{'schema': 'legacy_0',
+    formats = [{'id': 0,
                 'data': pd.DataFrame(
                     columns=['Trip Duration', 'Start Time', 'Stop Time', 'Start Station ID', 'Start Station Name',
                              'Start Station Latitude', 'Start Station Longitude', 'End Station ID',
                              'End Station Name',
                              'End Station Latitude', 'End Station Longitude', 'Bike ID', 'User Type', 'Birth Year',
                              'Gender'])},
-               {'schema': 'legacy_1',
+               {'id': 1,
                 'data': pd.DataFrame(
                     columns=['tripduration', 'starttime', 'stoptime', 'start station id', 'start station name',
                              'start station latitude', 'start station longitude', 'end station id',
                              'end station name',
                              'end station latitude', 'end station longitude', 'bikeid', 'usertype', 'birth year',
                              'gender'])},
-               {'schema': 'current',
+               {'id': 2,
                 'data': pd.DataFrame(
                     columns=['ride_id', 'rideable_type', 'started_at', 'ended_at', 'start_station_name',
                              'start_station_id',
                              'end_station_name', 'end_station_id', 'start_lat', 'start_lng', 'end_lat', 'end_lng',
                              'member_casual'])}]
 
-    def get_schema(df):
-        for schema in schemas:
-            if list(df.columns) == list(schema['data'].columns):
-                return schema
+    def get_format(df):
+        for fmt in formats:
+            if list(df.columns) == list(fmt['data'].columns):
+                return fmt
         return None
 
     for file in os.listdir('data'):
         source_df = pd.read_csv(os.path.join('data', file))
-        source_schema = get_schema(source_df)
-        if source_schema:
+        source_format = get_format(source_df)
+        if source_format:
             # Concatenate source data
-            source_schema['data'] = pd.concat([source_df, source_schema['data']], ignore_index=True)
+            source_format['data'] = pd.concat([source_df, source_format['data']], ignore_index=True)
         else:
             # Log warning if source data does not meet an expected data format
             # TODO: configure logger
             pass
-            # logger.warning(f"Unexpected schema in {os.path.join('data', file)}")
-    return schemas
+            # logger.warning(f"Unexpected format in {os.path.join('data', file)}")
+    return formats
 
 
-def load(schemas):
+def load(formats):
     with open('resources/snowflake_credentials.yml', 'r') as file:
         credentials = yaml.safe_load(file)
     with snow.connect(user=credentials['user'],
                       password=credentials['password'],
                       account=credentials['account'],
                       warehouse=credentials['warehouse'],
-                      database=credentials['database'],
-                      schema=credentials['schema']) as conn:
-        for schema in schemas:
-            with open(f"sql/ddl_{schema['schema']}.sql", 'r') as f:
+                      database='CITI_BIKE',
+                      schema='CITI_BIKE') as conn:
+        for fmt in formats:
+            with open(f"sql/ddl_raw_fmt_{str(fmt['id'])}.sql", 'r') as f:
                 sql = f.read()
             # Create table in database
             cur = conn.cursor()
-            cur.execute(f"CREATE SCHEMA IF NOT EXISTS {credentials['database']}.{credentials['schema']};")
             cur.execute(sql)
             cur.close()
             # Load data
-            write_pandas(conn, schema['data'], table_name=f"CITI_BIKE_{schema['schema'].upper()}")
+            write_pandas(conn, fmt['data'], table_name=f"CITI_BIKE_RAW_FMT_{str(fmt['id']).upper()}")
 
 
 def main():
-    download()
-    schemas = concat()
-    load(schemas)
+    # download()
+    load(concat())
 
 
 if __name__ == "__main__":

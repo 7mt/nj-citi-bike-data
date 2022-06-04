@@ -1,5 +1,5 @@
 create
-or replace TABLE CITI_BIKE.CITI_BIKE.CITI_BIKE_LEGACY_0 (
+or replace TABLE CITI_BIKE_RAW_FMT_0 (
     "Trip Duration" NUMBER(38, 0),
     "Start Time" TIMESTAMP_NTZ(9),
     "Stop Time" TIMESTAMP_NTZ(9),
