@@ -1,0 +1,45 @@
+version: 2
+
+sources:
+  - name: citi_bike
+    description: Data from Citi Bike's Amazon S3 bucket.
+    tables:
+      - name: citi_bike_raw_fmt_0
+        columns:
+          - name: User Type
+            quote: true
+            description: Membership status
+            tests:
+              - accepted_values:
+                  values: [ 'Subscriber', 'Customer' ]
+
+      - name: citi_bike_raw_fmt_1
+        columns:
+          - name: usertype
+            quote: true
+            description: Membership status
+            tests:
+              - accepted_values:
+                  values: [ 'Subscriber', 'Customer' ]
+          - name: gender
+            quote: true
+            description: User's gender. 0 = not specified, 1 = Male, 2 = Female
+            tests:
+              - accepted_values:
+                  values: [ 0, 1, 2 ]
+                  quote: true
+
+      - name: citi_bike_raw_fmt_2
+        columns:
+          - name: member_casual
+            quote: true
+            description: Membership status
+            tests:
+              - accepted_values:
+                  values: [ 'member', 'casual' ]
+          - name: ride_id
+            quote: true
+            description: Primary key of the table
+            tests:
+              - unique
+              - not_null
