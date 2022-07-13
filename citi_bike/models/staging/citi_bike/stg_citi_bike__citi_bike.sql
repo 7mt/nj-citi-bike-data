@@ -1,4 +1,4 @@
-with citi_bike_union as (
+with citi_bike_base as (
     select
         *
     from
@@ -17,4 +17,4 @@ with citi_bike_union as (
 select
     *
 from
-    citi_bike_union
+    citi_bike_base

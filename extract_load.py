@@ -87,6 +87,7 @@ def load(formats):
                       warehouse=credentials['warehouse'],
                       database='CITI_BIKE',
                       schema='CITI_BIKE') as conn:
+        # Load Citi Bike data
         for fmt in formats:
             with open(f"sql/ddl_raw_fmt_{str(fmt['id'])}.sql", 'r') as f:
                 sql = f.read()
@@ -96,6 +97,11 @@ def load(formats):
             cur.close()
             # Load data
             write_pandas(conn, fmt['data'], table_name=f"CITI_BIKE_RAW_FMT_{str(fmt['id']).upper()}")
+
+        # Create sequence to facilitate creation of surrogate key in fact table
+        cur = conn.cursor()
+        cur.execute("CREATE SEQUENCE IF NOT EXISTS seq START = 1000")
+        cur.close()
 
 
 def main():
