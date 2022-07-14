@@ -1,0 +1,39 @@
+version: 2
+
+models:
+  - name: dim_customer_type
+    columns:
+      - name: member_casual_key
+        tests:
+          - unique
+          - not_null
+  - name: dim_date
+    columns:
+      - name: date_key
+        tests:
+          - unique
+          - not_null
+  - name: dim_gender
+    columns:
+      - name: gender_key
+        tests:
+          - unique
+          - not_null
+  - name: dim_rideable_type
+    columns:
+      - name: rideable_type_key
+        tests:
+          - unique
+          - not_null
+  - name: dim_station
+    columns:
+      - name: station_key
+        tests:
+          - unique
+          - not_null
+  - name: fct_rides
+    columns:
+      - name: ride_id
+        tests:
+          - unique
+          - not_null
