@@ -1,7 +1,7 @@
 with citi_bike_raw as (
     select
         *
-    from {{ source('citi_bike', 'citi_bike_raw_fmt_1') }}
+    from {{ source('stg_citi_bike', 'raw_citi_bike_fmt_1') }}
 ),
 final as (
     select

@@ -35,6 +35,7 @@ clean-targets:         # directories to be removed by `dbt clean`
 models:
   citi_bike:
     staging:
+      +schema: stg_citi_bike
       citi_bike:
         # Config indicated by + and applies to all files under models/example/
         base:
@@ -43,4 +44,4 @@ models:
       core:
           +materialized: table
           intermediate:
-            +materialized: view
+            +materialized: ephemeral

@@ -1,10 +1,10 @@
 version: 2
 
 sources:
-  - name: citi_bike
+  - name: stg_citi_bike
     description: Data from Citi Bike's Amazon S3 bucket.
     tables:
-      - name: citi_bike_raw_fmt_0
+      - name: raw_citi_bike_fmt_0
         columns:
           - name: User Type
             quote: true
@@ -13,7 +13,7 @@ sources:
               - accepted_values:
                   values: [ 'Subscriber', 'Customer' ]
 
-      - name: citi_bike_raw_fmt_1
+      - name: raw_citi_bike_fmt_1
         columns:
           - name: usertype
             quote: true
@@ -29,7 +29,7 @@ sources:
                   values: [ 0, 1, 2 ]
                   quote: true
 
-      - name: citi_bike_raw_fmt_2
+      - name: raw_citi_bike_fmt_2
         columns:
           - name: member_casual
             quote: true
