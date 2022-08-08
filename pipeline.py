@@ -6,9 +6,42 @@ import time
 import os
 import pandas as pd
 from google.cloud import bigquery
+import logging
+from logging import handlers
+import pathlib
+import shutil
+
+logger = logging.getLogger(__name__)
 
 
-# TODO: configure logger
+def config_log(module_logger):
+    # Create handlers
+    formatter = logging.Formatter('%(asctime)s :: %(levelname)s :: %(name)s :: %(message)s')
+    stream_handler = logging.StreamHandler()
+    stream_handler.setFormatter(formatter)
+    file_handler = handlers.TimedRotatingFileHandler(
+        f'logs/{os.path.basename(os.path.dirname(os.path.realpath(__file__)))}.log', when="midnight", interval=1,
+        backupCount=6)
+    file_handler.setFormatter(formatter)
+
+    # Set logger level
+    module_logger.setLevel(logging.DEBUG)
+    # Apply handlers to loggers
+    module_logger.addHandler(stream_handler)
+    module_logger.addHandler(file_handler)
+
+
+def mkdirs():
+    cdir = pathlib.Path.cwd()
+    dirs = [{'path': cdir / 'logs', 'exists_ok': True},
+            {'path': cdir / 'data', 'exists_ok': True}]
+
+    for d in dirs:
+        try:
+            pathlib.Path(d['path']).mkdir(parents=True, exist_ok=d['exists_ok'])
+        except FileExistsError:
+            shutil.rmtree(d['path'], ignore_errors=True)
+            pathlib.Path(d['path']).mkdir(parents=True)
 
 
 def download():
@@ -34,6 +67,7 @@ def download():
 
 
 def concat():
+    logger.info("Determine data format and concatenate for all data files")
     # Define data formats
     formats = [{'id': 0,
                 'raw_cols': ['Trip Duration', 'Start Time', 'Stop Time', 'Start Station ID', 'Start Station Name',
@@ -105,13 +139,12 @@ def concat():
             source_format['data'] = pd.concat([source_df, source_format['data']], ignore_index=True)
         else:
             # Log warning if source data does not meet an expected data format
-            # TODO: configure logger
-            pass
-            # logger.warning(f"Unexpected format in {os.path.join('data', file)}")
+            logger.warning(f"Unexpected format in {os.path.join('data', file)}")
     return formats
 
 
 def load(formats):
+    logger.info("Load data into BigQuery")
     with bigquery.Client():
         # Load Citi Bike data
         for fmt in formats:
@@ -122,6 +155,11 @@ def load(formats):
 
 
 def main():
+    logger.info("Create directories")
+    mkdirs()
+    logger.info("Configure logger")
+    config_log(logger)
+    logger.info("Download Citi Bike data")
     download()
     load(concat())
 
