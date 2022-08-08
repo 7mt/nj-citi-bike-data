@@ -5,20 +5,20 @@ with citi_bike_raw as (
 ),
 final as (
     select
-        "rideable_type" AS rideable_type,
-        "started_at" AS started_at,
-        "ended_at" AS ended_at,
-        "start_station_id" AS start_station_id,
-        "start_station_name" AS start_station_name,
-        "start_lat" AS start_lat,
-        "start_lng" AS start_lng,
-        "end_station_id" AS end_station_id,
-        "end_station_name" AS end_station_name,
-        "end_lat" AS end_lat,
-        "end_lng" AS end_lng,
-        "member_casual" AS member_casual,
+        rideable_type,
+        started_at,
+        ended_at,
+        start_station_id,
+        start_station_name,
+        start_lat,
+        start_lng,
+        end_station_id,
+        end_station_name,
+        end_lat,
+        end_lng,
+        member_casual,
         NULL AS birth_year,
-        NULL AS gender
+        CAST(NULL AS STRING) AS gender
     from
         citi_bike_raw
 )

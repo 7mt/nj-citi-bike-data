@@ -5,25 +5,25 @@ with citi_bike_raw as (
 ),
 final as (
     select
-        NULL as rideable_type,
-        "Start Time" AS started_at,
-        "Stop Time" AS ended_at,
-        "Start Station ID" AS start_station_id,
-        "Start Station Name" AS start_station_name,
-        "Start Station Latitude" AS start_lat,
-        "Start Station Longitude" AS start_lng,
-        "End Station ID" AS end_station_id,
-        "End Station Name" AS end_station_name,
-        "End Station Latitude" AS end_lat,
-        "End Station Longitude" AS end_lng,
+        CAST(NULL AS STRING) as rideable_type,
+        start_time AS started_at,
+        stop_time AS ended_at,
+        CAST(start_station_id AS STRING) AS start_station_id,
+        start_station_name,
+        start_station_latitude AS start_lat,
+        start_station_longitude AS start_lng,
+        CAST(end_station_id AS STRING) AS end_station_id,
+        end_station_name,
+        end_station_latitude AS end_lat,
+        end_station_longitude AS end_lng,
         CASE
-            "User Type"
+            user_type
             WHEN 'Subscriber' then 'member'
             when 'Customer' THEN 'casual'
         END AS member_casual,
-        "Birth Year" AS birth_year,
+        birth_year,
         CASE
-            "Gender"
+            gender
             WHEN 1 THEN 'Male'
             WHEN 2 THEN 'Female'
         END AS gender

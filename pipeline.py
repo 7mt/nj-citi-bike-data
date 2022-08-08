@@ -117,7 +117,8 @@ def load(formats):
         for fmt in formats:
             # Load data
             fmt['data'] = fmt['data'].astype(dtype=fmt['dtypes'])
-            fmt['data'].to_gbq(destination_table=f"citi_bike.raw_citi_bike_fmt_{str(fmt['id'])}", if_exists='replace')
+            fmt['data'].to_gbq(destination_table=f"stg_citi_bike.raw_citi_bike_fmt_{str(fmt['id'])}",
+                               if_exists='replace')
 
 
 def main():

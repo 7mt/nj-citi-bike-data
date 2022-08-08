@@ -11,7 +11,6 @@ with citi_bike_stg as (
         {{ ref('stg_citi_bike__citi_bike') }}
 )
 select
-    seq.nextval AS ride_id,
     {{ dbt_utils.surrogate_key(['rideable_type']) }} rideable_type_key,
     {{ dbt_utils.surrogate_key(['started_at_foreign_key']) }} started_at_date_key,
     started_at_time,
@@ -26,9 +25,8 @@ select
     {{ dbt_utils.surrogate_key(['member_casual']) }} member_casual_key,
     birth_year,
     {{ dbt_utils.surrogate_key(['gender']) }} gender_key,
-    DATEDIFF('min', started_at, ended_at) AS ride_time_min,
-    HAVERSINE(start_lat, start_lng, end_lat, end_lng) * 0.621371 AS straight_line_distance_mi,
-    IFNULL((HAVERSINE(start_lat, start_lng, end_lat, end_lng) * 0.621371) / NULLIF(DATEDIFF('min', started_at, ended_at), 0) * 60, 0) AS straight_line_avg_speed_mph
+    TIMESTAMP_DIFF(started_at, ended_at, MINUTE) AS ride_time_min,
+    ST_DISTANCE(ST_GEOGPOINT(start_lat, start_lng), ST_GEOGPOINT(end_lat, end_lng)) * 0.621371 AS straight_line_distance_mi,
+    IFNULL((ST_DISTANCE(ST_GEOGPOINT(start_lat, start_lng), ST_GEOGPOINT(end_lat, end_lng)) * 0.621371) / NULLIF(TIMESTAMP_DIFF(started_at, ended_at, MINUTE), 0) * 60, 0) AS straight_line_avg_speed_mph
 from
-    citi_bike_stg stg,
-    table(getnextval(seq)) seq
+    citi_bike_stg stg
