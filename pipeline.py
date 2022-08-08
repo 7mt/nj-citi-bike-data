@@ -15,13 +15,16 @@ logger = logging.getLogger(__name__)
 
 
 def config_log(module_logger):
-    # Create handlers
     formatter = logging.Formatter('%(asctime)s :: %(levelname)s :: %(name)s :: %(message)s')
+    # Create stream handler
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(formatter)
-    file_handler = handlers.TimedRotatingFileHandler(
-        f'logs/{os.path.basename(os.path.dirname(os.path.realpath(__file__)))}.log', when="midnight", interval=1,
-        backupCount=6)
+    # Create file handler
+    filepath = f"logs/{os.path.basename(os.path.dirname(os.path.realpath(__file__)))}.log"
+    rollover = os.path.isfile(filepath)
+    file_handler = handlers.RotatingFileHandler(filepath, mode='w', backupCount=5, delay=True)
+    if rollover:
+        file_handler.doRollover()
     file_handler.setFormatter(formatter)
 
     # Set logger level
